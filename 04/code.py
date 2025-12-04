@@ -15,38 +15,27 @@ def main():
     file = open("test.txt" if test else "input.txt")
     data = file.read().splitlines()
 
+    # pad data to skip loads of ifs
+    data = [' ' + d + ' ' for d in data]
+    data.insert(0, ' '*len(data[0]))
+    data.append(' '*len(data[0]))
+
     width = len(data[0])
     height = len(data)
 
     def can_be_moved(data, x, y):
         if data[y][x] != '@':
             return False
-        rolls = 0
-        if x > 0:
-            if data[y][x-1] == '@':
-                rolls += 1
-            if y > 0 and data[y-1][x-1] == '@':
-                rolls += 1
-            if y < (height-1) and data[y+1][x-1] == '@':
-                rolls += 1
-        if x < width-1:
-            if data[y][x+1] == '@':
-                rolls += 1
-            if y > 0 and data[y-1][x+1] == '@':
-                rolls += 1
-            if y < height-1 and data[y+1][x+1] == '@':
-                rolls += 1
-        if y > 0 and data[y-1][x] == '@':
-            rolls += 1
-        if y < height-1 and data[y+1][x] == '@':
-            rolls += 1
-        return rolls < 4
+        rolls  = data[y-1].count('@', x-1, x+2)
+        rolls += data[y  ].count('@', x-1, x+2)
+        rolls += data[y+1].count('@', x-1, x+2)
+        return rolls < 5
 
     # CODE
     num = 0
     if part == Part.One:
-        for y in range(0, height):
-            for x in range(0, width):
+        for y in range(1, height-1):
+            for x in range(1, width-1):
                 if can_be_moved(data, x, y):
                     num += 1
     else:
@@ -54,8 +43,8 @@ def main():
         while True:
             data = data2.copy()
             old_num = num
-            for y in range(0, height):
-                for x in range(0, width):
+            for y in range(1, height-1):
+                for x in range(1, width-1):
                     if can_be_moved(data, x, y):
                         num += 1
                         data2[y] = data2[y][0:x] + 'x' + data2[y][x+1:]
