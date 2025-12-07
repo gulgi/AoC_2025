@@ -1,4 +1,5 @@
 from tqdm import tqdm
+from functools import lru_cache
 from enum import Enum
 import sys
 
@@ -15,11 +16,9 @@ def main():
     file = open("test.txt" if test else "input.txt")
     data = file.read().splitlines()
 
+    start_x = data[0].find('S')
     last_beams = set()
-    last_beams.add( data[0].find('S') )
-
-    last_beams2 = []
-    last_beams2.append( data[0].find('S') )
+    last_beams.add( start_x )
 
     width = len(data[0])
     height = len(data)
@@ -41,19 +40,21 @@ def main():
                     num += 1
             last_beams = beams.copy()
     else:
-        for y in tqdm(range(1, height)):
-            beams2 = []
-            for beam in last_beams2:
-                thing = data[y][beam]
-                if thing == '.':
-                    beams2.append(beam)
-                elif thing == '^':
-                    if beam > 0:
-                        beams2.append(beam-1)
-                    if beam < width-1:
-                        beams2.append(beam+1)
-            last_beams2 = beams2.copy()
-        num = len(beams2)
+        @lru_cache(maxsize=None)
+        def func(x, y):
+            if y == height-1:
+                return 1
+            thing = data[y][x]
+            if thing == '.':
+                return func(x, y+1)
+            num = 0
+            if x > 0:
+                num += func(x-1, y+1)
+            if x < width-1:
+                num += func(x+1, y+1)
+            return num
+
+        num = func( start_x, 0)
 
     # Output
     print("Part: ", part, " Test: ", test)
