@@ -54,7 +54,7 @@ def main():
                 num += func(x+1, y+1)
             return num
 
-        num = func( start_x, 0)
+        num = func( start_x, 1)
 
     # Output
     print("Part: ", part, " Test: ", test)
