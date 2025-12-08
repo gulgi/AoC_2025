@@ -29,18 +29,16 @@ def main():
                 connections.append((dist, i, j))
         connections.sort(key=lambda x: x[0])
 
+    # CODE
     num_boxes = 10 if test else 1000
     if part == Part.Two:
         num_boxes = len(connections)
-    # CODE
 
     circuits = []
     num = 0
     for connection in connections[:num_boxes]:
         _, i, j = connection
-        s = set()
-        s.add(i)
-        s.add(j)
+        s = { i, j }
         hits = 0
         indices = []
         for index in range(0, len(circuits)):
@@ -52,7 +50,6 @@ def main():
             circuits.append(s)
         elif hits > 1:
             indices.sort(reverse=True)
-            num_indices = len(indices)
             combined = set()
             for i in indices[:-1]:
                 combined = combined.union(circuits[i])
